@@ -1,0 +1,32 @@
+Screen {
+    layout: vertical;
+}
+.title {
+    width: 100%;
+    background: #fdf6e3;
+    text-align: center;
+}
+.button1area {
+    width: 100%;
+    height: 1fr;
+    align: center middle;
+    background: #fdf6e3;
+    
+}
+.button1 {
+    width: 16;
+    height: 3;
+    background: #efebd4;
+    color: #5c6a72;
+    margin-bottom: 1;
+    border: none;
+    
+    }
+.button1:hover{
+    background: #93B259;
+}
+.button1:focus{
+    background: #93B259;
+    color: #efebd4;
+}
+
