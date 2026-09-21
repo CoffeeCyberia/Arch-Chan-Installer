@@ -1,7 +1,9 @@
 import os
-from textual.app import App
-from textual.widgets import Footer, Header, Static, Button, Label, TabbedContent, TabPane
-from textual.containers import Container
+from textual.binding import Binding
+from textual import on
+from textual.app import App, ComposeResult
+from textual.widgets import Footer, Header, Static, Button, Label, TabbedContent, TabPane, RadioButton, RadioSet, Tabs, Select
+from textual.containers import Container, Center
 from textual.screen import Screen
 import subprocess
 
@@ -40,6 +42,12 @@ class StartScreen(Screen):
             self.app.exit()
 
 class SeconndScreen(Screen):
+    BINDINGS = [
+        Binding("left", "prev_tab", "Previous step"),
+        Binding("right", "next_tab", "Next step"),
+        Binding("up", "focus_previous", "Focus previous"),
+        Binding("down", "focus_next", "Focus next"),
+    ]
     def compose(self):
         yield Logo()
         with TabbedContent(classes="Installation"):
@@ -48,21 +56,25 @@ class SeconndScreen(Screen):
                      yield Label ("Test")
             with TabPane("Device Selection", classes="InstallationTabs"):
                 with Container(id="button2area"):
-                    yield Label("[#5c6a72]On Which Devive do you want to Install Apple Puff?[/#5c6a72]",classes="DevSec")
-                    yield Label("[#F85552]!THE WHOLE DEVICE WILL BE EREASED![/#F85552]",classes="DevSec")
+                    yield Label("[#5c6a72]On Which Devive do you want to Install Apple Puff?[/#5c6a72]",classes="DevSecText DevSec")
+                    yield Label("[#F85552]!THE WHOLE DEVICE WILL BE EREASED![/#F85552]",classes="DevSecText DevSec")
                     # lsblk -o NAME,MODEL,SIZE ausgabe trennen so das jede zeile ein eintrag in einem array ist. So viele wie dann im array ist so viele macht es dann als yield
                     # DiskNumber = 0
                     # for i in Disks:
                     #   yield Label(Disk[DiskNumber])
                     #   DiskNumber + 1
                     output = subprocess.check_output(
-                        ["lsblk", "-o", "NAME,MODEL,SIZE"],
+                        ["lsblk", "-dn", "-o", "NAME,MODEL,SIZE"],
                         text=True
                     )
                     Disks = output.splitlines()
-
-                    for disk in Disks:
-                        yield Label(disk)
+                    with Center():
+                        with RadioSet(classes="RadioSetDisk"):
+                            for disk in Disks:
+                                yield RadioButton(disk)
+                    #yield Select(((line, line) for line in Disks),
+                    #classes="DevSec SelectDisk"
+                    #)
             with TabPane("User Creation", classes="InstallationTabs"):
                 with Container(id="button2area"):
                     yield Label ("Test")
@@ -71,27 +83,38 @@ class SeconndScreen(Screen):
                     yield Label ("Test")
             with TabPane("Summary", classes="InstallationTabs"):
                 with Container(id="button2area"):
-                    yield Label ("Test")       
+                    yield Label ("Test")  
+
+        def on_mount(self) -> None:
+            self.query_one(TabbedContent).query_one(Tabs).can_focus = False
+
+        def action_prev_tab(self) -> None:
+            self.query_one(TabbedContent).query_one(Tabs).action_previous_tab()
+
+        def action_next_tab(self) -> None:
+            self.query_one(TabbedContent).query_one(Tabs).action_next_tab()
+
 
 
 
 class ArchInstaller(App):
         CSS_PATH = "Stylesheet.tcss"
-
+        BINDINGS = [
+        Binding("left", "focus_previous", "Focus previous"),
+        Binding("right", "focus_next", "Focus next"),
+        Binding("up", "focus_previous", "Focus previous"),
+        Binding("down", "focus_next", "Focus next"),
+        ]
         def on_mount(self) -> None:
             self.push_screen(StartScreen())
 
         # Arrowkeys for Navigation
-        def _on_key(self, event):
-            match event.key:
-                case "down":
-                    self.action_focus_next()
-                case "right":
-                    self.action_focus_next()
-                case "up":
-                    self.action_focus_previous()
-                case "left":
-                    self.action_focus_previous()
+        #def _on_key(self, event):
+        #    match event.key:
+        #        case "down":
+        #            self.action_focus_next()
+        #        case "up":
+        #            self.action_focus_previous()
     
 if __name__ == "__main__":
     app = ArchInstaller()

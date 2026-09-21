@@ -72,8 +72,51 @@ SeconndScreen {
     height: 100%;
     overflow-y: hidden;
 }
+.DevSecText{
+    width: 100%;
+}
 .DevSec{
     text-align: center;
-    width: 100%;
     align-horizontal: center
 }
+
+
+RadioSet {
+    background: #efebd4;
+    color: #5c6a72;
+    border: tall #5C6A72;
+    width: 60;
+}
+RadioSet:focus {
+    border: tall #93B259;
+}
+RadioSet:focus > RadioButton.-selected {
+    background: #93B259;
+    color: #efebd4;
+    text-style: bold;
+}
+RadioButton > .toggle--button {
+    color: #5c6a72;
+    background: #E6E2CC;
+}
+RadioButton.-on > .toggle--button {
+    color: #93B259;
+}
+RadioButton:hover {
+    background: #93B259 40%;
+}
+RadioSet:focus > RadioButton.-selected > .toggle--label {
+    background: #93B259;
+    color: #efebd4;
+    text-style: bold;
+}
+.RadioSetDisk{
+    align-horizontal: center;
+    margin-top: 3;
+}
+RadioSet > RadioButton.-selected > .toggle--label {
+    background: #93B259 50%;
+    color: #5c6a72;
+    text-style: none;
+}
+
