@@ -11,6 +11,11 @@ Screen {
     height: 1fr;
     align: center middle;
     background: #fdf6e3;
+}
+#button2area {
+    background: #fdf6e3;
+    color: #5c6a72;
+    align-horizontal: center;
     
 }
 .button1 {
@@ -24,9 +29,51 @@ Screen {
     }
 .button1:hover{
     background: #93B259;
+    color: #efebd4;
 }
 .button1:focus{
     background: #93B259;
     color: #efebd4;
 }
+.Installation{
+    background: #fdf6e3;
+    text-align: center;
+    width: 100%;
+    align-horizontal: center;
+    }
 
+.InstallationTabs{
+    background: #fdf6e3;
+    border: none;
+    border-bottom: none;
+}
+TabbedContent.Installation Tabs {
+    width: 100%;
+}
+TabbedContent.Installation Tab {
+    background: #efebd4;
+    color: #5c6a72;
+    border: none;
+    width: 1fr;
+}
+TabbedContent.Installation Tab.-active {
+    background: #93B259;
+    color: #efebd4;
+}
+
+TabbedContent.Installation Tab:hover {
+    background: #93B259;
+    color: #efebd4;
+}
+TabbedContent.Installation Underline {
+    display: none;
+}
+SeconndScreen {
+    height: 100%;
+    overflow-y: hidden;
+}
+.DevSec{
+    text-align: center;
+    width: 100%;
+    align-horizontal: center
+}
