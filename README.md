@@ -1,4 +1,3 @@
 # Arch-Installer
 
-After Attempts with Bash and GO ill try Python.
-Python is one of the Programming Language wich i have the most experience with.
+Ill Tried to use as little AI as Possible. Everything i needed to do with AI i will Note with Obsidian.

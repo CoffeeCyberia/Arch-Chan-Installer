@@ -1,3 +1,7 @@
+# Ill try to use as little AI as Possible but Sometimes my skills arent good enought.
+# But everything ill Code with AI will get Noted in Obsidian. You Can find my Notes for this Project in the Reposetory
+# Thx for using this Programm. If you have some Correction for my code feel free to Edit and commit you Changes.
+
 import os
 from textual.binding import Binding
 from textual import on
@@ -23,30 +27,29 @@ LOGO = """
 
 """
 
-class Logo(Label):
-    def __init__(self) -> None:
-        super().__init__(LOGO, classes="title")
+class Logo(Label):                                 #AI
+    def __init__(self) -> None:                    #AI
+        super().__init__(LOGO, classes="title")    #AI
 
 
 class StartScreen(Screen):
     def compose(self):
         yield Logo()
-        with Container(id="button1area"):
+        with Container(id="button1area"):          #AI Told me Abaut Containers while Debuging (Noted how it Works in the Obsidian Vault)
             yield Button("Start",classes="button1", id="Start")
             yield Button("Exit",classes="button1", id="Exit")
-    #Button Presses StartScreen
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "Start":
-            self.app.push_screen(SeconndScreen())
-        if event.button.id == "Exit":
-            self.app.exit()
+    def on_button_pressed(self, event: Button.Pressed) -> None: #AI Helped me how Buttons Work and told me hwo to switch screens
+        if event.button.id == "Start":                          #
+            self.app.push_screen(SeconndScreen())               #
+        if event.button.id == "Exit":                           #
+            self.app.exit()                                     #
 
 class SeconndScreen(Screen):
-    BINDINGS = [
-        Binding("left", "prev_tab", "Previous step"),
-        Binding("right", "next_tab", "Next step"),
-        Binding("up", "focus_previous", "Focus previous"),
-        Binding("down", "focus_next", "Focus next"),
+    BINDINGS = [                                                #AI Helped me with the Bindings (Noted how it Works in the Obsidian Vault)
+        Binding("left", "prev_tab", "Previous step"),           #
+        Binding("right", "next_tab", "Next step"),              #
+        Binding("up", "focus_previous", "Focus previous"),      #
+        Binding("down", "focus_next", "Focus next"),            #
     ]
     def compose(self):
         yield Logo()
@@ -63,12 +66,12 @@ class SeconndScreen(Screen):
                     # for i in Disks:
                     #   yield Label(Disk[DiskNumber])
                     #   DiskNumber + 1
-                    output = subprocess.check_output(
-                        ["lsblk", "-dn", "-o", "NAME,MODEL,SIZE"],
-                        text=True
-                    )
-                    Disks = output.splitlines()
-                    with Center():
+                    output = subprocess.check_output(               #AI corrected my Idea (Noted how it Works in the Obsidian Vault)
+                        ["lsblk", "-dn", "-o", "NAME,MODEL,SIZE"],  #
+                        text=True                                   #
+                    )                                               #
+                    Disks = output.splitlines()                     #
+                    with Center():                                  # Ai Told me about Center (Noted how it Works in the Obsidian Vault)
                         with RadioSet(classes="RadioSetDisk"):
                             for disk in Disks:
                                 yield RadioButton(disk)
@@ -85,30 +88,30 @@ class SeconndScreen(Screen):
                 with Container(id="button2area"):
                     yield Label ("Test")  
 
-        def on_mount(self) -> None:
-            self.query_one(TabbedContent).query_one(Tabs).can_focus = False
+        def on_mount(self) -> None:                                             #AI
+            self.query_one(TabbedContent).query_one(Tabs).can_focus = False     #AI
 
-        def action_prev_tab(self) -> None:
-            self.query_one(TabbedContent).query_one(Tabs).action_previous_tab()
+        def action_prev_tab(self) -> None:                                      #AI
+            self.query_one(TabbedContent).query_one(Tabs).action_previous_tab() #AI (Noted how it Works in the Obsidian Vault)
 
-        def action_next_tab(self) -> None:
-            self.query_one(TabbedContent).query_one(Tabs).action_next_tab()
+        def action_next_tab(self) -> None:                                      #AI
+            self.query_one(TabbedContent).query_one(Tabs).action_next_tab()     #AI (Noted how it Works in the Obsidian Vault)
 
 
 
 
 class ArchInstaller(App):
         CSS_PATH = "Stylesheet.tcss"
-        BINDINGS = [
-        Binding("left", "focus_previous", "Focus previous"),
-        Binding("right", "focus_next", "Focus next"),
+        BINDINGS = [                                            #AI helped me with Bindings (Noted how it Works in the Obsidian Vault)
+        Binding("left", "focus_previous", "Focus previous"),    # 
+        Binding("right", "focus_next", "Focus next"),           #
         Binding("up", "focus_previous", "Focus previous"),
         Binding("down", "focus_next", "Focus next"),
         ]
         def on_mount(self) -> None:
             self.push_screen(StartScreen())
 
-        # Arrowkeys for Navigation
+        # Arrowkeys for Navigation (Original Keys)
         #def _on_key(self, event):
         #    match event.key:
         #        case "down":
