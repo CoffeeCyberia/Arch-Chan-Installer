@@ -11,6 +11,9 @@ from textual.containers import Container, Center, Vertical, Horizontal
 from textual.screen import Screen
 import subprocess
 
+
+
+
 LOGO = """       
 
 
@@ -30,6 +33,15 @@ LOGO = """
 class Logo(Label):                                 #AI (Noted how it Works in the Obsidian Vault)
     def __init__(self) -> None:                    #AI
         super().__init__(LOGO, classes="title")    #AI
+
+def GetNetworkInterfaces():
+    NetworkInterfaceOutput = subprocess.check_output(
+    ("ls /sys/class/net | grep -v lo"),
+    shell=True,
+    text=True
+    )
+    NetworkInterfaces = NetworkInterfaceOutput.splitlines
+    return(NetworkInterfaces)
 
 
 class StartScreen(Screen):
@@ -75,88 +87,31 @@ class SeconndScreen(Screen):
                         with RadioSet(classes="RadioSetDisk"):
                             for disk in Disks:
                                 yield RadioButton(disk)
-                    yield Select(((line, line) for line in Disks),
-                    classes="DevSec SelectDisk"
-                    )
+                    #yield Select(((line, line) for line in Disks),
+                    #classes="DevSec SelectDisk"
+                    #)
             with TabPane("User Creation", classes="InstallationTabs"):
                 with Container(id="button2area"):
                     yield Label ("Test")
             with TabPane("Network Connection", classes="InstallationTabs"):
                 with Container(id="button2area"):
-                    def GetNetworksInterfaces():
-                        NetworkInterfaceOutput = subprocess.check_output(
-                            ["ls", "/sys/class/net", "|", "grep", "-v", "lo"],
-                            text=True
-                        )
-                        NentworkInterfaces = NetworkInterfaceOutput.splitlines
-                        return(NentworkInterfaces)
+                    NetworkInterfaces = GetNetworkInterfaces()
+                    yield Select(((Disk, Disk)for Disk in NetworkInterfaces()), id="SelectNetworkInterface")
+                    @on(Select.Changed, "#SelectNetworkInterface")
+                    async def interface_selected(self, event: Select.Changed) -> None: # Defenetly AI i dont know this shit
+                        if event.value is Select.BLANK:
+                            return
 
-                       #i have no idea what trash im turning into garbage 
-                    yield Select(()for Disk in GetNetworksInterfaces())         
-                    @on(Select.Changed)                                         #checked how to get the selection with AI
-                    def select_changed(self, event: Select.Changed) -> None:    #
-                        NetworkInterface=event.value
-                        def NetworkInterfaceStatus(NI):
-                            NetworkInterfaceStatusOutput = subprocess.check_output("cat /sys/class/net/",NI,"/operstate", text=True)
-                            if NetworkInterfaceStatusOutput == "up":
-                                return(True)
-                            elif NetworkInterfaceStatusOutput == "down":
-                                return(False)
-                            else:
-                                return("Something went Wrong (Maybe your PC is Garbage)")
-                        if NetworkInterfaceStatus(event.value) == True:
-                            yield Label("Network Interface Status:[#8DA101]Conected[/#8DA101]")
-                        elif NetworkInterfaceStatus(event.value) == False:
-                            if "en" in event.value:
-                                yield Label("Wirred Network Interface Status:[#F85552]Disconected[/#F85552]")
-                                # make a recheck function executed by a button press
-                            def AvailableSSID(NetworkInterface):
-                                subprocess.run(["iwctl", "station", NetworkInterface, "scan"])
-                                OutputSSIDs = subprocess.run(["iwctl", "station", NetworkInterface, "get-networks"], text=True)
-                                SSIDs = OutputSSIDs.splitlines
-                                return(SSIDs)
-                            yield Select(()for SSID in AvailableSSID(NetworkInterface))
-                            @on(Select.Changed)
-                            def select_changed(self, event: Select.Changed) -> None:
-                                SSID = event.value
-                                yield Input(placeholder="Enter Password", id="Password")
-                                yield Label("Press Enter to Submit")
-                                def on_input_submitted(self, event: Input.Submitted) -> None:
-                                    value = event.value
-                                    self.query_one("#Password", Input).value
-                                    WLANOutput = subprocess.check_output(["iwctl", "--passphrase", event.value,"station", NetworkInterface, "connect", SSID], text=True)
-                                    yield Label(WLANOutput)
+                        SSIDs = [("DHCP", "dhcp"), ("Static", "static")]
+                        existing = self.query("#SSID Select")
+                        if existing:
+                            existing.first(Select).set_options(SSIDs)
+                        else:
+                            await self.query_one("#button2area", Container).mount(
+                                Select(SSIDs, prompt="Choose IP mode", id="second_select")
+                            )
+                    
 
-
-                                    
-
-
-                            with Container():
-                                yield Select(()for Disk in GetNetworksInterfaces())
-                                #@on(Select.Changed)
-                                def select_changed(self, event: Select.Changed) -> None:
-                                    if NetworkInterfaceStatus(event.value) == False:
-
-
-                                            if NetworkInterfaceStatusOutput == "up":
-                                                return(True)
-                                            elif NetworkInterfaceStatusOutput == "down":
-                                                return(False)
-                                            else:
-                                                return("Something went Wrong (Maybe your PC is Garbage)")
-
-
-                                # WLAN Passwort
-                                
-                            def on_input_submitted(self, event: Input.Submitted) -> None:
-                                value = event.value
-                                self.query_one("#Password", input).value
-                                if value == "wlan":
-
-                                    subprocess.run(["iwctl"], ["station", value, "scan"])                                   
-                              
-             
-                    yield Label ("Test")
             with TabPane("Software", classes="InstallationTabs"):
                 with Container(id="button2area"):
                     yield Label ("Test")
