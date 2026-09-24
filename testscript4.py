@@ -1,6 +1,6 @@
 from textual.app import App, ComposeResult
 from textual import on
-from textual.widgets import Label, Select
+from textual.widgets import Label, Select, TabbedContent, TabPane
 
 
 class DependentSelectApp(App):
@@ -12,21 +12,24 @@ class DependentSelectApp(App):
     """
 
     def compose(self) -> ComposeResult:
-        yield Label("Wähle zuerst eine Kategorie:")
+        with TabbedContent(classes="Installation"):
+            with TabPane("Locale", classes="InstallationTabs"):
+                yield Label("Wähle zuerst eine Kategorie:")
 
-        yield Select(
-            options=[
-                ("Obst", "fruits"),
-                ("Gemüse", "vegetables"),
-            ],
-            id="first-select",
-        )
+                yield Select(
+                    options=[
+                        ("Obst", "fruits"),
+                        ("Gemüse", "vegetables"),
+                        ("Burger", "Burger")
+                    ],
+                    id="first-select",
+                )
 
-        yield Select(
-            options=[],
-            id="second-select",
-            prompt="Wähle ein Produkt...",
-        )
+                yield Select(
+                    options=[],
+                    id="second-select",
+                    prompt="Wähle ein Produkt...",
+                )
 
     @on(Select.Changed, "#first-select")
     def handle_selection(self, event: Select.Changed) -> None:
