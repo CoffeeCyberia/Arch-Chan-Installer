@@ -9,7 +9,7 @@ from textual.app import App, ComposeResult
 from textual.widgets import Footer, Header, Static, Button, Label, TabbedContent, TabPane, RadioButton, RadioSet, Tabs, Select, Input
 from textual.containers import Container, Center, Vertical, Horizontal
 from textual.screen import Screen
-import subprocess
+import subprocess, re
 
 
 
@@ -35,13 +35,7 @@ class Logo(Label):                                 #AI (Noted how it Works in th
         super().__init__(LOGO, classes="title")    #AI
 
 def GetNetworkInterfaces():
-    NetworkInterfaceOutput = subprocess.check_output(
-    ("ls /sys/class/net | grep -v lo"),
-    shell=True,
-    text=True
-    )
-    NetworkInterfaces = NetworkInterfaceOutput.splitlines
-    return(NetworkInterfaces)
+    return sorted(n for n in os.listdir("/sys/class/net") if n != "lo")
 
 
 class StartScreen(Screen):
@@ -96,12 +90,22 @@ class SeconndScreen(Screen):
             with TabPane("Network Connection", classes="InstallationTabs"):
                 with Container(id="button2area"):
                     NetworkInterfaces = GetNetworkInterfaces()
-                    yield Select(((Disk, Disk)for Disk in NetworkInterfaces()), id="SelectNetworkInterface")
-                    @on(Select.Changed, "#SelectNetworkInterface")
-                    async def on_Select_Changed(self) -> None:
-                        await self.mount(Label("Test"))
-                        self.query_one(Button).label = "yes"
+                    yield Select(((NetInt, NetInt)for NetInt in NetworkInterfaces), id="SelectNetworkInterface")
+                    yield Select(options=[], id="SSID-Select")
+                    
 
+                    test= """
+                    def network_interface_selected(self, event: Select.Changed) -> None:
+                        if event.value == Select.NULL:
+                            return
+                        self.selected_interface = event.value
+                        subprocess.run(
+                        ["iwctl", "station", self.selected_interface, "scan"],
+                        check=True
+                        )
+                    """
+                    
+                    
                     test= """
                     async def interface_selected(self, event: Select.Changed) -> None: # Defenetly AI i dont know this shit
                         if event.value is Select.BLANK:
@@ -124,6 +128,35 @@ class SeconndScreen(Screen):
             with TabPane("Summary", classes="InstallationTabs"):
                 with Container(id="button2area"):
                     yield Label ("Test")  
+
+
+    @on(Select.Changed, "#SelectNetworkInterface")
+    def handle_selection(self, event: Select.Changed) -> None:
+        SSID_select = self.query_one("#SSID-Select", Select)
+        if event.value == Select.BLANK:
+            SSID_select.styles.display = "none"
+            SSID_select.update_options([])
+            return
+        
+        if "wl" in event.value:
+            self.selected_interface = event.value
+             
+            subprocess.run(
+            ["sudo", "iwctl", "station", "wlan0", "scan"],
+            check=True
+            )
+            new_options = subprocess.check_output( ["sh", "-c", r"sudo iwctl station wlan0 get-networks | sed 's/\x1b\[[0-9;]*m//g' | tail -n +5 | sed 's/^[ >]*//; s/ \{2,\}.*//' | grep -v '^$'"], text=True ).splitlines() 
+
+        elif "en" in event.value:
+            new_options = ["Apple", "Durum"]
+
+        else:
+            new_options = ["NotApple", "NotDurum"]
+                    
+        SSID_select.set_options((s, s) for s in new_options)
+        SSID_select.clear
+        SSID_select.styles.display = "block" 
+
 
         def on_mount(self) -> None:                                             #AI
             self.query_one(TabbedContent).query_one(Tabs).can_focus = False     #AI
