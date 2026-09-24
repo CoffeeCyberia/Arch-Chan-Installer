@@ -97,11 +97,38 @@ class SeconndScreen(Screen):
                 with Container(id="button2area"):
                     NetworkInterfaces = GetNetworkInterfaces()
                     yield Select(((Disk, Disk)for Disk in NetworkInterfaces()), id="SelectNetworkInterface")
+                    yield Select(options=[], id="SSID-Select")
                     @on(Select.Changed, "#SelectNetworkInterface")
-                    async def on_Select_Changed(self) -> None:
-                        await self.mount(Label("Test"))
-                        self.query_one(Button).label = "yes"
+                    def handle_selection(self, event: Select.Changed) -> None:
+                        SSID_select = self.query_one("#second-select", Select)
+                        if event.value == Select.NULL:
+                            SSID_select.styles.display = "none"
+                            SSID_select.update_options([])
+                            return
+        
+                        if "wl" in event.value:
+                            self.selected_interface = event.value
+                            new_options = subprocess.run(
+                            ["iwctl", "station", self.selected_interface, "scan"],
+                            check=True
+                            )
 
+                            SSID_select.set_options(new_options)
+                            SSID_select.value = Select.NULL
+                            SSID_select.styles.display = "block" 
+
+
+                    def network_interface_selected(self, event: Select.Changed) -> None:
+                        if event.value == Select.NULL:
+                            return
+                        self.selected_interface = event.value
+                        subprocess.run(
+                        ["iwctl", "station", self.selected_interface, "scan"],
+                        check=True
+                        )
+                    
+                    
+                    
                     test= """
                     async def interface_selected(self, event: Select.Changed) -> None: # Defenetly AI i dont know this shit
                         if event.value is Select.BLANK:

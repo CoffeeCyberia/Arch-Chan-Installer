@@ -120,3 +120,7 @@ RadioSet > RadioButton.-selected > .toggle--label {     /* used ai  */
     text-style: none;
 }
 
+#SSID-Select {
+    display: none;
+    margin-top: 1;
+}
