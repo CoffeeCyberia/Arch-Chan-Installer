@@ -124,3 +124,11 @@ RadioSet > RadioButton.-selected > .toggle--label {     /* used ai  */
     display: none;
     margin-top: 1;
 }
+#EnterWLANPassword {
+    display: none;
+    margin-top: 1; 
+}
+#ConnectWLANButton {
+    display: none;
+    margin-top: 1;
+}

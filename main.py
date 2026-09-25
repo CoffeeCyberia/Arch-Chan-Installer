@@ -50,7 +50,11 @@ class StartScreen(Screen):
         if event.button.id == "Exit":                           #
             self.app.exit()                                     #
 
+
 class SeconndScreen(Screen):
+    selected_interface: str | None = None
+    entered_password: str | None = None
+    selected_ssid: str | None = None
     BINDINGS = [                                                #AI Helped me with the Bindings (Noted how it Works in the Obsidian Vault)
         Binding("left", "prev_tab", "Previous step"),           #
         Binding("right", "next_tab", "Next step"),              #
@@ -92,6 +96,8 @@ class SeconndScreen(Screen):
                     NetworkInterfaces = GetNetworkInterfaces()
                     yield Select(((NetInt, NetInt)for NetInt in NetworkInterfaces), id="SelectNetworkInterface")
                     yield Select(options=[], id="SSID-Select")
+                    yield Input(placeholder="Enter Password", id="EnterWLANPassword", password=True)
+                    yield Button("Connect", id="ConnectWLANButton", classes="button1")
                     
 
                     test= """
@@ -131,11 +137,15 @@ class SeconndScreen(Screen):
 
 
     @on(Select.Changed, "#SelectNetworkInterface")
-    def handle_selection(self, event: Select.Changed) -> None:
+    def on_network_interface_selected(self, event: Select.Changed) -> None:
         SSID_select = self.query_one("#SSID-Select", Select)
+        Password_Input = self.query_one("#EnterWLANPassword", Input)
+        Connect_Button = self.query_one("#ConnectWLANButton", Button)
         if event.value == Select.BLANK:
             SSID_select.styles.display = "none"
             SSID_select.update_options([])
+            Password_Input.styles.display = "none"
+            Connect_Button.styles.display = "none"
             return
         
         if "wl" in event.value:
@@ -160,7 +170,32 @@ class SeconndScreen(Screen):
         SSID_select.set_options((s, s) for s in new_options)
         SSID_select.clear
         SSID_select.styles.display = "block" 
+        Password_Input.clear
+        Password_Input.styles.display = "block"
+        Connect_Button.styles.display = "block"
 
+    @on(Select.Changed, "#SSID-Select")
+    def on_ssid_selected(self, event: Select.Changed) -> None:
+        self.selected_ssid = event.value
+
+    @on(Input.Changed, "#EnterWLANPassword")
+    def handle_selection(self, event: Input.Changed) -> None:
+        self.entered_password = event.value
+        
+
+    def on_password_changed(self, event: Button.Pressed,):
+        if event.button.id == "ConnectWLANButton":
+            interface = self.selected_interface
+            password = self.entered_password
+            ssid = self.selected_ssid
+            password_quoted = '"' + password + '"'
+            ssid_quoted = '"' + ssid + '"'
+            subprocess.run(
+                ["sudo", "iwctl","--passphrase", password_quoted,"station", interface, "connect", ssid_quoted],
+                check=True
+                )
+
+    
 
         def on_mount(self) -> None:                                             #AI
             self.query_one(TabbedContent).query_one(Tabs).can_focus = False     #AI
