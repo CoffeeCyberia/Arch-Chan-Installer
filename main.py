@@ -142,10 +142,14 @@ class SeconndScreen(Screen):
             self.selected_interface = event.value
              
             subprocess.run(
-            ["sudo", "iwctl", "station", "wlan0", "scan"],
+            ["sudo", "iwctl", "station", event.value, "scan"],
             check=True
             )
-            new_options = subprocess.check_output( ["sh", "-c", r"sudo iwctl station wlan0 get-networks | sed 's/\x1b\[[0-9;]*m//g' | tail -n +5 | sed 's/^[ >]*//; s/ \{2,\}.*//' | grep -v '^$'"], text=True ).splitlines() 
+            output = subprocess.check_output(
+                ["sh", "-c", r"""iwctl station "$1" get-networks | sed 's/\x1b\[[0-9;]*m//g' | tail -n +5 | sed 's/^[ >]*//; s/ \{2,\}.*//' | grep -v '^$'""", "sh", event.value],
+                text=True,
+            )
+            new_options = [line for line in output.splitlines() if line.strip()]
 
         elif "en" in event.value:
             new_options = ["Apple", "Durum"]
