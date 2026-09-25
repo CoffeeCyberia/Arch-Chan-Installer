@@ -1,6 +1,7 @@
 Screen {
     layout: vertical;
 }
+
 .title {
     width: 100%;
     background: #fdf6e3;
@@ -120,15 +121,88 @@ RadioSet > RadioButton.-selected > .toggle--label {     /* used ai  */
     text-style: none;
 }
 
+Select > SelectCurrent{
+    background: #efebd4 ;
+    border: tall #5c6a72 ;
+}
+Select:focus > SelectCurrent {
+    border: tall #93B259;
+}
+
+SelectCurrent Static#label {
+    color: #5c6a72;
+}
+Select > SelectOverlay > .option-list--option-disabled {
+    color: #5c6a72;
+}
+
+Select > SelectOverlay {
+    border: tall #93B259;
+    background: #efebd4;
+    color: #5c6a72;
+}
+
+.select1{
+    width: 60;
+    color: #5c6a72;
+    margin-top: 1;
+}
+
+SelectOverlay > .option-list--option-disabled {
+    color: #5c6a72;
+}
+
+SelectOverlay > .option-list--option-highlighted {
+    background: #93B259;
+    color: #efebd4;
+}
+
+#SelectNetworkInterface{
+
+}
+
+Input {
+    background: #efebd4;
+    color: #5c6a72;
+    border: tall #5c6a72;
+    margin-top: 1;
+}
+
+Input:focus {
+    border: tall #93B259;
+}
+
+Input > .input--placeholder {
+    color: #5c6a72 50%;
+}
+
+Input > .input--cursor {
+    background: #93B259;
+    color: #efebd4;
+}
+
+Input > .input--selection {
+    background: #93B259 50%;
+}
+
+Input.-invalid {
+    border: tall #F85552 60%;
+}
+
+Input.-invalid:focus {
+    border: tall #F85552;
+}
+
 #SSID-Select {
     display: none;
-    margin-top: 1;
 }
 #EnterWLANPassword {
     display: none;
-    margin-top: 1; 
+    width: 60;
 }
 #ConnectWLANButton {
     display: none;
     margin-top: 1;
+    width: 10;
+    align-horizontal: center;
 }

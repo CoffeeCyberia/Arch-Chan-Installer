@@ -9,7 +9,9 @@ from textual.app import App, ComposeResult
 from textual.widgets import Footer, Header, Static, Button, Label, TabbedContent, TabPane, RadioButton, RadioSet, Tabs, Select, Input
 from textual.containers import Container, Center, Vertical, Horizontal
 from textual.screen import Screen
+from textual.theme import Theme
 import subprocess, re
+
 
 
 
@@ -29,6 +31,11 @@ LOGO = """
 [#F85552].8'       `8. `88888. [/#F85552][#DFA000] 8 8888         [/#DFA000][#8DA101]8 8888         [/#8DA101][#3A94C5] 8 888888888888 [/#3A94C5][#DF69BA]8 888888888888[/#DF69BA]           [#35A77C]8 8888        [/#35A77C][#F57D26]    `Y88888P'  [/#F57D26][#F85552] 8 8888         [/#F85552][#DFA000]8 8888         [/#DFA000]
 
 """
+
+my_theme = Theme(
+    name="my-theme",
+    primary="#93B259",
+    )
 
 class Logo(Label):                                 #AI (Noted how it Works in the Obsidian Vault)
     def __init__(self) -> None:                    #AI
@@ -94,8 +101,8 @@ class SeconndScreen(Screen):
             with TabPane("Network Connection", classes="InstallationTabs"):
                 with Container(id="button2area"):
                     NetworkInterfaces = GetNetworkInterfaces()
-                    yield Select(((NetInt, NetInt)for NetInt in NetworkInterfaces), id="SelectNetworkInterface")
-                    yield Select(options=[], id="SSID-Select")
+                    yield Select(((NetInt, NetInt)for NetInt in NetworkInterfaces), id="SelectNetworkInterface", classes="select1")
+                    yield Select(options=[], id="SSID-Select", classes="select1")
                     yield Input(placeholder="Enter Password", id="EnterWLANPassword", password=True)
                     yield Button("Connect", id="ConnectWLANButton", classes="button1")
                     
