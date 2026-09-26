@@ -202,7 +202,6 @@ class SeconndScreen(Screen):
         if event.button.id == "ConnectWLANButton":
             ConnectionStatus = self.query_one("#ConnectionStatus", Static)
             ConnectionStatus.styles.display = "none"
-            ConnectionStatus.styles.color = "none"
             interface = self.selected_interface
             password = self.entered_password
             ssid = self.selected_ssid
@@ -212,7 +211,7 @@ class SeconndScreen(Screen):
             #ConnectFail = '"' + "Failure: Could not connect." + '"'
             try:              #Ai told about try and exept
                 subprocess.run(
-                ["sudo", "iwctl", "--passphrase", password_quoted, "station", interface, "connect", ssid_quoted],
+                ["sudo", "iwctl", "--passphrase", password_quoted, "station", interface, "connect", ssid],
                 check=True
                 )
                 ConnectionStatus.update("Connection Established")
