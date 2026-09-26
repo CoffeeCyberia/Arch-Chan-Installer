@@ -32,7 +32,7 @@ LOGO = """
 
 """
 
-ConnectionStatusButton = ""
+ConnectionStatusText = ""
 
 my_theme = Theme(
     name="my-theme",
@@ -106,7 +106,7 @@ class SeconndScreen(Screen):
                     yield Select(((NetInt, NetInt)for NetInt in NetworkInterfaces), id="SelectNetworkInterface", classes="select1")
                     yield Select(options=[], id="SSID-Select", classes="select1")
                     yield Input(placeholder="Enter Password", id="EnterWLANPassword", password=True)
-                    yield Label(ConnectionStatusButton, id="ConnectionStatus")
+                    yield Static(ConnectionStatusText, id="ConnectionStatus")
                     yield Button("Connect", id="ConnectWLANButton", classes="button1")
                     
 
@@ -216,16 +216,16 @@ class SeconndScreen(Screen):
                 shell=True
                 )
             if WLANStatus == ConnectSuccess:
-                ConnectionStatusButton = "Connection Established"
+                ConnectionStatusText = "Connection Established"
                 ConnectionStatus.styles.display = "block"
                 ConnectionStatus.styles.color = "#8DA101"
 
             elif WLANStatus == ConnectFail:
-                ConnectionStatusButton = "Connection Failed"
+                ConnectionStatusText = "Connection Failed"
                 ConnectionStatus.styles.display = "block"
                 ConnectionStatus.styles.color = "#F85552"
             else:
-                ConnectionStatusButton = "something went wrong"
+                ConnectionStatusText = "something went wrong"
                 ConnectionStatus.styles.display = "block"
                 ConnectionStatus.styles.color = "#F85552"
 
