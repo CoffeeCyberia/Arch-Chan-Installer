@@ -32,6 +32,8 @@ LOGO = """
 
 """
 
+ConnectionStatusButton = ""
+
 my_theme = Theme(
     name="my-theme",
     primary="#93B259",
@@ -104,6 +106,7 @@ class SeconndScreen(Screen):
                     yield Select(((NetInt, NetInt)for NetInt in NetworkInterfaces), id="SelectNetworkInterface", classes="select1")
                     yield Select(options=[], id="SSID-Select", classes="select1")
                     yield Input(placeholder="Enter Password", id="EnterWLANPassword", password=True)
+                    yield Label(ConnectionStatusButton, id="ConnectionStatus")
                     yield Button("Connect", id="ConnectWLANButton", classes="button1")
                     
 
@@ -157,10 +160,11 @@ class SeconndScreen(Screen):
         
         if "wl" in event.value:
             self.selected_interface = event.value
+
+            #if /sys/class/net/Networkinterface/operstate is up label: Internet Connected, if down the run the connection thing
              
             subprocess.run(
-            ["sudo", "iwctl", "station", event.value, "scan"],
-            check=True
+            ["sudo", "iwctl", "station", event.value, "scan"]
             )
             output = subprocess.check_output(
                 ["sh", "-c", r"""iwctl station "$1" get-networks | sed 's/\x1b\[[0-9;]*m//g' | tail -n +5 | sed 's/^[ >]*//; s/ \{2,\}.*//' | grep -v '^$'""", "sh", event.value],
@@ -168,18 +172,22 @@ class SeconndScreen(Screen):
             )
             new_options = [line for line in output.splitlines() if line.strip()]
 
+            SSID_select.set_options((s, s) for s in new_options)
+            SSID_select.clear
+            SSID_select.styles.display = "block" 
+            Password_Input.clear
+            Password_Input.styles.display = "block"
+            Connect_Button.styles.display = "block"
+            
+
         elif "en" in event.value:
-            new_options = ["Apple", "Durum"]
+            print()
+            #if network device is up label: Internet Connected, if down the: Internet is not connected
 
         else:
             new_options = ["NotApple", "NotDurum"]
                     
-        SSID_select.set_options((s, s) for s in new_options)
-        SSID_select.clear
-        SSID_select.styles.display = "block" 
-        Password_Input.clear
-        Password_Input.styles.display = "block"
-        Connect_Button.styles.display = "block"
+
 
     @on(Select.Changed, "#SSID-Select")
     def on_ssid_selected(self, event: Select.Changed) -> None:
@@ -192,15 +200,34 @@ class SeconndScreen(Screen):
 
     def on_password_changed(self, event: Button.Pressed,):
         if event.button.id == "ConnectWLANButton":
+            ConnectionStatus = self.query_one("#ConnectionStatus", Label)
+            ConnectionStatus.styles.display = "none"
+            ConnectionStatus.styles.color = "none"
             interface = self.selected_interface
             password = self.entered_password
             ssid = self.selected_ssid
             password_quoted = '"' + password + '"'
             ssid_quoted = '"' + ssid + '"'
-            subprocess.run(
-                ["sudo", "iwctl","--passphrase", password_quoted,"station", interface, "connect", ssid_quoted],
-                check=True
+            ConnectSuccess = '"' + "Success: Connected!" + '"'
+            ConnectFail = '"' + "Failure: Could not connect." + '"'
+            WLANStatus = subprocess.check_output(
+                ["sudo", "iwctl","--passphrase", password_quoted, "station", interface, "connect", ssid_quoted, "&&", "echo", ConnectSuccess, "||", "echo", ConnectFail],
+                check=True,
+                shell=True
                 )
+            if WLANStatus == ConnectSuccess:
+                ConnectionStatusButton = "Connection Established"
+                ConnectionStatus.styles.display = "block"
+                ConnectionStatus.styles.color = "#8DA101"
+
+            elif WLANStatus == ConnectFail:
+                ConnectionStatusButton = "Connection Failed"
+                ConnectionStatus.styles.display = "block"
+                ConnectionStatus.styles.color = "#F85552"
+            else:
+                ConnectionStatusButton = "something went wrong"
+                ConnectionStatus.styles.display = "block"
+                ConnectionStatus.styles.color = "#F85552"
 
     
 

@@ -206,3 +206,9 @@ Input.-invalid:focus {
     width: 10;
     align-horizontal: center;
 }
+
+#ConnectionStatus{
+    display: none;
+    margin-top: 1;
+    color: white;
+}
