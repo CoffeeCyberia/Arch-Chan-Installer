@@ -197,48 +197,66 @@ class SeconndScreen(Screen):
     def handle_selection(self, event: Input.Changed) -> None:
         self.entered_password = event.value
         
-
+    @on(Button.Pressed, "#ConnectWLANButton") # AI telld me about @on
     def on_password_changed(self, event: Button.Pressed,):
         if event.button.id == "ConnectWLANButton":
-            ConnectionStatus = self.query_one("#ConnectionStatus", Label)
+            ConnectionStatus = self.query_one("#ConnectionStatus", Static)
             ConnectionStatus.styles.display = "none"
             ConnectionStatus.styles.color = "none"
             interface = self.selected_interface
             password = self.entered_password
             ssid = self.selected_ssid
-            password_quoted = '"' + password + '"'
+            password_quoted = '"' + password + '"' #Ai told me how to add Quotes to a Variable
             ssid_quoted = '"' + ssid + '"'
-            ConnectSuccess = '"' + "Success: Connected!" + '"'
-            ConnectFail = '"' + "Failure: Could not connect." + '"'
+            #ConnectSuccess = '"' + "Success: Connected!" + '"'
+            #ConnectFail = '"' + "Failure: Could not connect." + '"'
+            try:              #Ai told about try and exept
+                subprocess.run(
+                ["sudo", "iwctl", "--passphrase", password_quoted, "station", interface, "connect", ssid_quoted],
+                check=True
+                )
+                ConnectionStatus.update("Connection Established")
+                ConnectionStatus.styles.color = "#8DA101"
+            except subprocess.CalledProcessError:
+                ConnectionStatus.update("Connection Failed")
+                ConnectionStatus.styles.color = "#F85552"
+            ConnectionStatus.styles.display = "block"
+
+            
+
+                
+
+            test='''
             WLANStatus = subprocess.check_output(
                 ["sudo", "iwctl","--passphrase", password_quoted, "station", interface, "connect", ssid_quoted, "&&", "echo", ConnectSuccess, "||", "echo", ConnectFail],
                 check=True,
                 shell=True
                 )
             if WLANStatus == ConnectSuccess:
-                ConnectionStatusText = "Connection Established"
+                ConnectionStatus.update("Connection Established")
                 ConnectionStatus.styles.display = "block"
                 ConnectionStatus.styles.color = "#8DA101"
 
             elif WLANStatus == ConnectFail:
-                ConnectionStatusText = "Connection Failed"
+                ConnectionStatus.update("Connection Failed")
                 ConnectionStatus.styles.display = "block"
                 ConnectionStatus.styles.color = "#F85552"
             else:
-                ConnectionStatusText = "something went wrong"
+                ConnectionStatus.update("Something went wrong")
                 ConnectionStatus.styles.display = "block"
                 ConnectionStatus.styles.color = "#F85552"
+                '''
 
     
 
-        def on_mount(self) -> None:                                             #AI
-            self.query_one(TabbedContent).query_one(Tabs).can_focus = False     #AI
+def on_mount(self) -> None:                                             #AI
+    self.query_one(TabbedContent).query_one(Tabs).can_focus = False     #AI
 
-        def action_prev_tab(self) -> None:                                      #AI
-            self.query_one(TabbedContent).query_one(Tabs).action_previous_tab() #AI (Noted how it Works in the Obsidian Vault)
+def action_prev_tab(self) -> None:                                      #AI
+    self.query_one(TabbedContent).query_one(Tabs).action_previous_tab() #AI (Noted how it Works in the Obsidian Vault)
 
-        def action_next_tab(self) -> None:                                      #AI
-            self.query_one(TabbedContent).query_one(Tabs).action_next_tab()     #AI (Noted how it Works in the Obsidian Vault)
+def action_next_tab(self) -> None:                                      #AI
+    self.query_one(TabbedContent).query_one(Tabs).action_next_tab()     #AI (Noted how it Works in the Obsidian Vault)
 
 
 
