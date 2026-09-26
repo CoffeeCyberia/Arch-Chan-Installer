@@ -6,7 +6,7 @@ import os
 from textual.binding import Binding
 from textual import on
 from textual.app import App, ComposeResult
-from textual.widgets import Footer, Header, Static, Button, Label, TabbedContent, TabPane, RadioButton, RadioSet, Tabs, Select, Input
+from textual.widgets import Footer, Header, Static, Button, Label, TabbedContent, TabPane, RadioButton, RadioSet, Tabs, Select, Input, SelectionList
 from textual.containers import Container, Center, Vertical, Horizontal
 from textual.screen import Screen
 from textual.theme import Theme
@@ -78,7 +78,9 @@ class SeconndScreen(Screen):
         with TabbedContent(classes="Installation"):
             with TabPane("Locale", classes="InstallationTabs"):
                 with Container(id="button2area"):
-                     yield Label ("Test")
+                     yield Select((), id="SelectKeyboardLayout", classes="select1")
+                     yield Select((), id="SelectCountry", classes="select1")
+                     yield Select((), id="SelectTimeZone",classes="select1")
             with TabPane("Device Selection", classes="InstallationTabs"):
                 with Container(id="button2area"):
                     yield Label("[#5c6a72]On Which Devive do you want to Install Apple Puff?[/#5c6a72]",classes="DevSecText DevSec")
@@ -102,7 +104,12 @@ class SeconndScreen(Screen):
                     #)
             with TabPane("User Creation", classes="InstallationTabs"):
                 with Container(id="button2area"):
-                    yield Label ("Test")
+                    yield Input(placeholder="Enter Username", id="EnterUsername")
+                    yield Input(placeholder="Enter Password", id="EnterUserPassword", password=True)
+                    yield Input(placeholder="Enter Password Again", id="EnterUserPassword2", password=True)
+                    yield Input(placeholder="Enter Root Password", id="EnterRootPassword", password=True)
+                    yield Input(placeholder="Enter Toor Password Again", id="EnterRootPassword2", password=True)
+                    yield Input(placeholder="Enter Hostname", id="EnterHostname")
             with TabPane("Network Connection", classes="InstallationTabs"):
                 with Container(id="button2area"):
                     NetworkInterfaces = GetNetworkInterfaces()
@@ -143,7 +150,14 @@ class SeconndScreen(Screen):
 
             with TabPane("Software", classes="InstallationTabs"):
                 with Container(id="button2area"):
-                    yield Label ("Test")
+                    yield SelectionList(
+                        ("Firefox", 0, True),
+                        ("Obsidian", 1),
+                        ("NeoVim", 2, True),
+                        ("LibreOffice", 3),
+                        ("Btop", 4, True),
+                        ("cmus", 5, True)
+                    )
             with TabPane("Summary", classes="InstallationTabs"):
                 with Container(id="button2area"):
                     yield Label ("Test")  
