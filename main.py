@@ -44,7 +44,10 @@ class Logo(Label):                                 #AI (Noted how it Works in th
         super().__init__(LOGO, classes="title")    #AI
 
 def GetNetworkInterfaces():
-    return sorted(n for n in os.listdir("/sys/class/net") if n != "lo")
+    out = subprocess.run("ls /sys/class/net | grep -E '^(en|wl)'", shell=True, capture_output=True, text=True)
+    interfaces = out.stdout.split()
+    return interfaces
+    #return sorted(n for n in os.listdir("/sys/class/net") if n != "lo")
 
 
 class StartScreen(Screen):
@@ -181,11 +184,28 @@ class SeconndScreen(Screen):
             
 
         elif "en" in event.value:
-            print()
-            #if network device is up label: Internet Connected, if down the: Internet is not connected
+            ConnectionStatus = self.query_one("#ConnectionStatus", Static)
+            ConnectionStatus.styles.display = "none"
+            command = "/sys/class/net/" + event.value + "/operstate"
+            LANOUT = subprocess.check_output(
+            ["cat", command],
+            text=True,
+            ).strip()
+            
+            if LANOUT == "up":
+                ConnectionStatus.update("Internet Connected")
+                ConnectionStatus.styles.color = "#8DA101"
+            else:
+                ConnectionStatus.update("Connection Failed:")
+                ConnectionStatus.styles.color = "#F85552"
+            ConnectionStatus.styles.display = "block"
+
 
         else:
-            new_options = ["NotApple", "NotDurum"]
+            ConnectionStatus = self.query_one("#ConnectionStatus", Static)
+            ConnectionStatus.update("Something Went Wrong, Please Select an WLAN or LAN interface")
+            ConnectionStatus.styles.color = "#F85552"
+            ConnectionStatus.styles.display = "block"
                     
 
 
