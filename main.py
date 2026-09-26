@@ -154,17 +154,16 @@ class SeconndScreen(Screen):
         SSID_select = self.query_one("#SSID-Select", Select)
         Password_Input = self.query_one("#EnterWLANPassword", Input)
         Connect_Button = self.query_one("#ConnectWLANButton", Button)
-        if event.value == Select.BLANK:
+        ConnectionStatus = self.query_one("#ConnectionStatus", Static)
+        if event.value == Select.NULL:
             SSID_select.styles.display = "none"
-            SSID_select.update_options([])
             Password_Input.styles.display = "none"
             Connect_Button.styles.display = "none"
+            ConnectionStatus.styles.display = "none"
             return
         
         if "wl" in event.value:
             self.selected_interface = event.value
-
-            #if /sys/class/net/Networkinterface/operstate is up label: Internet Connected, if down the run the connection thing
              
             subprocess.run(
             ["sudo", "iwctl", "station", event.value, "scan"]
@@ -184,7 +183,6 @@ class SeconndScreen(Screen):
             
 
         elif "en" in event.value:
-            ConnectionStatus = self.query_one("#ConnectionStatus", Static)
             ConnectionStatus.styles.display = "none"
             command = "/sys/class/net/" + event.value + "/operstate"
             LANOUT = subprocess.check_output(
